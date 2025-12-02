@@ -1,0 +1,42 @@
+# Ports se definen en override
+services:
+  track-clients:
+    container_name: track-clients
+    build:
+      context: ../../../
+      dockerfile: ./.devops/docker/develop/Dockerfile
+    volumes:
+      - ../../../:/var/www/app
+      - ~/storage_block/track-clients/volumen_files:/var/www/volumen_files
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      
+# Nginx Service
+  track-clients-nginx:
+    image: nginx:alpine
+    container_name: track-clients-nginx
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../../../:/var/www/app
+      - ./nginx/conf.d/:/etc/nginx/templates
+    environment:
+      NGINX_FASTCGI_PASS: "track-clients:9000"
+
+# Servicio de Base de Datos PostgreSQL
+  db-postgres-track-clients:
+    image: postgres:14
+    container_name: db-postgres-track-clients
+    environment:
+      POSTGRES_PASSWORD: "shtwkj211283sss"
+      POSTGRES_USER: "routes_api"
+      POSTGRES_DB: "routes-api"
+    volumes:
+      - ~/storage_block/routes/postgres/data:/var/lib/postgresql/data
+    ports:
+      - 5438:5432
+
+#docker network create track-clients-network
+networks:
+  default:
+    name: track-clients-network
+    external: true

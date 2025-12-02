@@ -1,0 +1,9 @@
+#Puerto_maquina:puerto_contenedor
+services:
+  track-clients-nginx:
+    ports:
+      - "8084:80"
+
+  track-clients:
+    ports:
+      - "5173:5173"
