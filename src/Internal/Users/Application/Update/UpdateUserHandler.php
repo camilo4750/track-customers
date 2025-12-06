@@ -35,12 +35,11 @@ class UpdateUserHandler
             }
         }
 
-        // Preparar array con todos los campos usando ?? para valores por defecto
         $data = [
-            'name' => $request->name ?? null,
-            'email' => $request->email ?? null,
-            'password' => $request->password ?? null,
-            'status' => $request->status ?? null,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'status' => $request->status,
         ];
 
         $result = $this->userRepository->update($request->id, $data);

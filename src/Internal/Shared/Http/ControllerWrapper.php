@@ -43,6 +43,15 @@ class ControllerWrapper
                 'message' => $exception->getMessage(),
                 'errors' => $exception->getErrors()
             ], $exception->getCode());
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            $response = response()->json([
+                'success' => false,
+                'code' => 500,
+                'message' => 'Error interno del servidor',
+                'errors' => []
+            ], 500);
         }
         return $response;
     }

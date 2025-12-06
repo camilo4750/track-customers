@@ -63,7 +63,6 @@ class UserRepository implements UserRepositoryInterface
             'updated_at' => now(),
         ];
 
-        // Solo hashear password si no es null
         if (isset($user['password']) && $user['password'] !== null) {
             $data['password'] = Hash::make($user['password']);
         }
