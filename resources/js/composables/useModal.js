@@ -35,7 +35,12 @@ export function useModal() {
         modalState.title = '';
         modalState.component = null;
         modalState.props = {};
+        modalState.size = 'md';
+        modalState.closable = true;
+        modalState.dismissableMask = true;
         modalState.onClose = null;
+        modalState.onConfirm = null;
+        modalState.onCancel = null;
     };
 
     const handleConfirm = (data) => {
