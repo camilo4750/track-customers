@@ -6,6 +6,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,9 +24,13 @@ createInertiaApp({
             .use(plugin)
             .use(PrimeVue, {
                 theme: {
-                    preset: Aura
+                    preset: Aura,
+                    options: {
+                        darkModeSelector: '.dark',
+                    }
                 }
             })
+            .component('font-awesome-icon', FontAwesomeIcon)
             .mount(el);
     },
     progress: {
