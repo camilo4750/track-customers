@@ -18,7 +18,7 @@ const props = defineProps({
             <span class="text-sm text-gray-600 dark:text-gray-400">{{ props.metric.label }}</span>
         </div>
         <div class="mb-2">
-            <span class="text-3xl font-bold text-dark dark:text-blue-400">{{ props.metric.value }}</span>
+            <span class="text-3xl font-bold text-gray-900 dark:text-blue-400">{{ props.metric.value }}</span>
         </div>
         <div class="flex items-center gap-1">
             <FontAwesomeIcon 
