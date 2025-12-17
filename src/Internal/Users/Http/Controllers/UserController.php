@@ -24,7 +24,7 @@ class UserController extends Controller
     public function index()
     {
         $users = $this->listUsersHandler->handle();
-        return Inertia::render('Users/Index', [
+        return Inertia::render('users/pages/User', [
             'data' => $users
         ]);
     }
