@@ -20,12 +20,13 @@
     }
     
     const menu = [
-      { label: 'Dashboard', icon: faHome },
-      { label: 'Marketplace', icon: faStore },
-      { label: 'Orders', icon: faList },
-      { label: 'Tracking', icon: faLocationDot },
-      { label: 'Customers', icon: faUsers },
-      { label: 'Discounts', icon: faPercent }
+      { label: 'Dashboard', icon: faHome, route: '' },
+      { label: 'Users', icon: faUsers, route: 'users.index' },
+      { label: 'Marketplace', icon: faStore, route: '' },
+      { label: 'Orders', icon: faList, route: '' },
+      { label: 'Tracking', icon: faLocationDot, route: '' },
+      { label: 'Customers', icon: faUsers, route: '' },
+      { label: 'Discounts', icon: faPercent, route: '' }
     ]
     </script>
     
