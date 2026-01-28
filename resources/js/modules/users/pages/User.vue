@@ -7,7 +7,7 @@ import Select from 'primevue/select';
 import BaseLayout from '../../../layouts/BaseLayout.vue';
 import Toast from 'primevue/toast';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faEdit, faUserShield, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faUserShield, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from '../../../utils/formatters';
 import UserForm from '../components/UserForm.vue';
 import EditUserForm from '../components/EditUserForm.vue';
@@ -24,6 +24,8 @@ import {
 import { useToast } from 'primevue/usetoast';
 import { showToast } from '../../../composables/useToast';
 import { useUserPanel } from '../composables/useUserPanel';
+import { useModal } from '../../../composables/useModal';
+import ConfirmDeleteUserModal from '../components/ConfirmDeleteUserModal.vue';
 
 const props = defineProps({
     data: {
@@ -35,6 +37,8 @@ const props = defineProps({
 const toast = useToast();
 const users = ref(props.data);
 const loading = ref(false);
+
+const { openModal } = useModal();
 
 const { 
     showCreatePanel, 
@@ -126,6 +130,39 @@ const handleApplyFilters = async () => {
 const handleRoles = (user) => {
     console.log('Gestionar roles de usuario:', user);
     // Aquí se implementará la lógica de roles en el futuro
+};
+
+const handleDelete = (user) => {
+    openModal({
+        title: 'Eliminar usuario',
+        component: ConfirmDeleteUserModal,
+        props: { user },
+        size: 'sm',
+        closable: false,
+        dismissableMask: false,
+        onConfirm: async () => {
+            try {
+                loading.value = true;
+                const response = await axios.delete(route('users.destroy', user.id));
+
+                showToast(toast, {
+                    severity: 'success',
+                    summary: 'Usuario eliminado',
+                    detail: response.data?.message || 'El usuario ha sido eliminado correctamente.'
+                });
+
+                await getUsers();
+            } catch (error) {
+                showToast(toast, {
+                    severity: 'error',
+                    summary: 'Error al eliminar usuario',
+                    detail: error.response?.data?.message || 'No se pudo eliminar el usuario.'
+                });
+            } finally {
+                loading.value = false;
+            }
+        },
+    });
 };
 
 </script>
@@ -250,6 +287,17 @@ const handleRoles = (user) => {
                             class="h-7 w-7 p-0"
                         >
                             <FontAwesomeIcon :icon="faUserShield" class="text-xs" />
+                        </Button>
+                        <Button
+                            rounded
+                            outlined
+                            severity="danger"
+                            size="small"
+                            @click="handleDelete(row)"
+                            title="Eliminar usuario"
+                            class="h-7 w-7 p-0"
+                        >
+                            <FontAwesomeIcon :icon="faTrash" class="text-xs" />
                         </Button>
                     </div>
                 </template>
