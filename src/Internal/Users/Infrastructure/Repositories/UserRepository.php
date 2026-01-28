@@ -45,6 +45,7 @@ class UserRepository implements UserRepositoryInterface
             'name' => $user['name'],
             'email' => $user['email'],
             'password' => Hash::make($user['password']),
+            'role' => $user['role'],
             'status' => $user['status'] ?? 'active',
             'created_at' => now(),
             'updated_at' => now(),
@@ -60,6 +61,7 @@ class UserRepository implements UserRepositoryInterface
             'name' => $user['name'],
             'email' => $user['email'],
             'status' => $user['status'],
+            'role' => $user['role'],
             'updated_at' => now(),
         ];
 
@@ -77,12 +79,18 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @return array<int, \stdClass>
      */
-    public function findAll(): array
+    public function findAll(?array $filters = []): array
     {
-        return DB::table($this->getTableName())
-            ->orderBy('id', 'desc')
-            ->get()
-            ->toArray();
+        $query = DB::table($this->getTableName());
+
+        if (!empty($filters)) {
+            $query->where($filters);
+        }
+
+        return $query
+        ->orderBy('id', 'desc')
+        ->get()
+        ->toArray();
     }
 
 }

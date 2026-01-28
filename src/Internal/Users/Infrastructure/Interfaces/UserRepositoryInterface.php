@@ -12,6 +12,6 @@ interface UserRepositoryInterface
 
     public function update(int $id, array $user): bool;
 
-    public function findAll(): array;
+    public function findAll(?array $filters = []): array;
 }
 

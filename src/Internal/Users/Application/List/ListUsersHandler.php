@@ -11,9 +11,24 @@ class ListUsersHandler
     ) {
     }
 
-    public function handle(): array
+    private function processFilters(array $requestFilters): array
     {
-        return $this->userRepository->findAll();
+        $filters = [];
+
+        if (isset($requestFilters['role']) && $requestFilters['role'] !== null && $requestFilters['role'] !== '') {
+            $filters['role'] = $requestFilters['role'];
+        }
+
+        if (isset($requestFilters['status']) && $requestFilters['status'] !== null && $requestFilters['status'] !== '') {
+            $filters['status'] = $requestFilters['status'];
+        }
+
+        return $filters;
+    }
+
+    public function handle(?array $requestFilters = []): array
+    {   
+        $filters = $this->processFilters($requestFilters);
+        return $this->userRepository->findAll($filters);
     }
 }
-
