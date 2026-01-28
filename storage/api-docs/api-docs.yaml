@@ -99,6 +99,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
 
+    delete:
+      summary: Eliminar un usuario
+      description: Elimina un usuario existente del sistema por su ID
+      operationId: deleteUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     User:
