@@ -93,4 +93,12 @@ class UserRepository implements UserRepositoryInterface
         ->toArray();
     }
 
+    public function delete(int $id): bool
+    {
+        $affected = DB::table($this->getTableName())
+            ->where('id', $id)
+            ->delete();
+
+        return $affected > 0;
+    }
 }

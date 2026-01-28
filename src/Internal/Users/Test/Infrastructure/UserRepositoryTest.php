@@ -143,4 +143,29 @@ class UserRepositoryTest extends TestCase
             'status' => 'active',
         ]);
     }
+
+    public function test_it_can_delete_a_user(): void
+    {
+        $userData = [
+            'name' => 'John Doe',
+            'email' => 'john.doe@example.com',
+            'password' => 'password123',
+        ];
+
+        $userId = $this->repository->create($userData);
+
+        $this->assertDatabaseHas('users', ['id' => $userId]);
+
+        $deleted = $this->repository->delete($userId);
+
+        $this->assertTrue($deleted);
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    }
+
+    public function test_it_returns_false_when_deleting_nonexistent_user(): void
+    {
+        $deleted = $this->repository->delete(999);
+
+        $this->assertFalse($deleted);
+    }
 }
