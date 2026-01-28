@@ -24,6 +24,8 @@ class UserRepositoryTest extends TestCase
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $userId = $this->repository->create($userData);
@@ -44,6 +46,8 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $userId = $this->repository->create($userData);
@@ -69,12 +73,16 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $user2 = [
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $created1 = $this->repository->create($user1);
@@ -98,6 +106,8 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $userId = $this->repository->create($userData);
@@ -123,6 +133,8 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $userId = $this->repository->create($userData);
@@ -131,6 +143,7 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Updated',
             'email' => 'john.updated@example.com',
             'password' => 'newpassword123',
+            'role' => 'user',
             'status' => 'active',
         ]);
 
@@ -150,6 +163,8 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $userId = $this->repository->create($userData);

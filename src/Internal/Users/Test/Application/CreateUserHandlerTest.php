@@ -41,6 +41,8 @@ class CreateUserHandlerTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         /** @var LegacyMockInterface $mockRepository */
@@ -58,9 +60,11 @@ class CreateUserHandlerTest extends TestCase
                 return is_array($arg)
                     && $arg['name'] === 'John Doe'
                     && $arg['email'] === 'john.doe@example.com'
-                    && $arg['password'] === 'password123';
+                    && $arg['password'] === 'password123'
+                    && $arg['role'] === 'user'
+                    && $arg['status'] === 'active';
             }))
-            ->andReturn(1); // ahora create devuelve el id (int)
+            ->andReturn(1);
 
         // Act
         $resultId = $this->handler->handle($request);
@@ -77,6 +81,8 @@ class CreateUserHandlerTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
+            'role' => 'admin',
+            'status' => 'active',
         ];
 
         $existingUser = [

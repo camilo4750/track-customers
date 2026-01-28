@@ -41,6 +41,9 @@ class UpdateUserHandlerTest extends TestCase
             'id' => 1,
             'name' => 'John Updated',
             'email' => 'john.doe@example.com',
+            'password' => null,
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $existingUser = [
@@ -80,7 +83,11 @@ class UpdateUserHandlerTest extends TestCase
         // Arrange
         $request = (object) [
             'id' => 1,
+            'name' => 'John Doe',
+            'email' => 'john.doe@example.com',
             'password' => 'newpassword123',
+            'role' => 'user',
+            'status' => 'active',
         ];
 
         $existingUser = [
