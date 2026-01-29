@@ -5,9 +5,11 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import PrimeVue from 'primevue/config';
+import ToastService from 'primevue/toastservice';
 import Aura from '@primeuix/themes/aura';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import Tooltip from 'primevue/tooltip';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -31,7 +33,9 @@ createInertiaApp({
                         darkModeSelector: '.dark',
                     }
                 }
-            })    
+            })
+            .use(ToastService)
+            .directive('tooltip', Tooltip)
             .component('font-awesome-icon', FontAwesomeIcon)
             .mount(el);
     },

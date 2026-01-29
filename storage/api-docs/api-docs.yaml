@@ -1,0 +1,269 @@
+openapi: 3.0.0
+info:
+  title: Track Clients API
+  version: 1.0.0
+  description: API para la gestión de usuarios del sistema Track Clients
+
+servers:
+  - url: http://localhost:8000
+    description: Servidor de desarrollo
+
+tags:
+  - name: Users
+    description: Endpoints para la gestión de usuarios
+
+paths:
+  /api/users:
+    get:
+      summary: Listar todos los usuarios
+      description: Obtiene una lista de todos los usuarios registrados en el sistema
+      operationId: listUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema con los datos proporcionados
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        description: Datos del usuario a crear
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '200':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /api/users/{id}:
+    put:
+      summary: Actualizar un usuario existente
+      description: Actualiza los datos de un usuario existente en el sistema
+      operationId: updateUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario a actualizar
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        description: Datos del usuario a actualizar
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+    delete:
+      summary: Eliminar un usuario
+      description: Elimina un usuario existente del sistema por su ID
+      operationId: deleteUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Juan Pérez
+        email:
+          type: string
+          format: email
+          example: juan@example.com
+        role:
+          type: string
+          enum: [user, admin]
+          example: user
+        status:
+          type: string
+          enum: [active, inactive]
+          example: active
+        email_verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: Nombre completo del usuario
+          example: Juan Pérez
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          description: Correo electrónico único del usuario
+          example: juan@example.com
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          description: Contraseña del usuario (mínimo 8 caracteres)
+          example: password123
+          minLength: 8
+        password_confirmation:
+          type: string
+          format: password
+          description: Confirmación de la contraseña
+          example: password123
+        role:
+          type: string
+          enum: [user, admin]
+          description: Rol del usuario
+          example: user
+          default: user
+        status:
+          type: string
+          enum: [active, inactive]
+          description: Estado del usuario
+          example: active
+          default: active
+
+    UpdateUserRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+          example: 1
+        name:
+          type: string
+          description: Nombre completo del usuario
+          example: Juan Pérez
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          description: Correo electrónico único del usuario
+          example: juan@example.com
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          description: Nueva contraseña del usuario (mínimo 8 caracteres)
+          example: newpassword123
+          minLength: 8
+        status:
+          type: string
+          enum: [active, inactive]
+          description: Estado del usuario
+          example: active
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Usuario 1 Creado correctamente
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Usuario no encontrado
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            name:
+              type: array
+              items:
+                type: string
+            email:
+              type: array
+              items:
+                type: string
+            password:
+              type: array
+              items:
+                type: string

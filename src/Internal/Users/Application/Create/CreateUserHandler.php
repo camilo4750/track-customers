@@ -27,7 +27,8 @@ class CreateUserHandler
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => $request->password,
-            'status'   => $request->status ?? 'active',
+            'role'     => $request->role,
+            'status'   => $request->status ?? 'active'
         ]);
     }
 }
