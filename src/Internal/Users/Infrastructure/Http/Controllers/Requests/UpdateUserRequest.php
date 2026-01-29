@@ -1,6 +1,6 @@
 <?php
 
-namespace Internal\Users\Http\Controllers\Requests;
+namespace Internal\Users\Infrastructure\Http\Controllers\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,4 +32,3 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 }
-

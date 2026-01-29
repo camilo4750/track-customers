@@ -1,6 +1,6 @@
 <?php
 
-namespace Internal\Users\Http\Providers;
+namespace Internal\Users\Infrastructure\Http\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
@@ -37,4 +37,3 @@ class UserManagerProvider extends ServiceProvider
         //
     }
 }
-

@@ -1,6 +1,6 @@
 <?php
 
-namespace Internal\Users\Http\Controllers;
+namespace Internal\Users\Infrastructure\Http\Controllers;
 
 use Internal\Shared\Http\ControllerWrapper;
 use Illuminate\Http\JsonResponse;
@@ -10,8 +10,8 @@ use Internal\Users\Application\Create\CreateUserHandler;
 use Internal\Users\Application\Delete\DeleteUserHandler;
 use Internal\Users\Application\List\ListUsersHandler;
 use Internal\Users\Application\Update\UpdateUserHandler;
-use Internal\Users\Http\Controllers\Requests\CreateUserRequest;
-use Internal\Users\Http\Controllers\Requests\UpdateUserRequest;
+use Internal\Users\Infrastructure\Http\Controllers\Requests\CreateUserRequest;
+use Internal\Users\Infrastructure\Http\Controllers\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -75,4 +75,3 @@ class UserController extends Controller
         });
     }
 }
-

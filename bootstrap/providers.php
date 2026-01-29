@@ -2,5 +2,5 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    Internal\Users\Http\Providers\UserManagerProvider::class,
+    Internal\Users\Infrastructure\Http\Providers\UserManagerProvider::class,
 ];
