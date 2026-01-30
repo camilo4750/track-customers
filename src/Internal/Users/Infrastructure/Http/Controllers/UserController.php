@@ -2,6 +2,7 @@
 
 namespace Internal\Users\Infrastructure\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Internal\Shared\Http\ControllerWrapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -43,9 +44,12 @@ class UserController extends Controller
         });
     }
 
-    public function store(CreateUserRequest $request): array|JsonResponse              
+    public function store(Request $request): array|JsonResponse              
     {
         return ControllerWrapper::execWithJsonSuccessResponse(function () use ($request) {
+            (new CreateUserRequest())
+                ->validateRequest($request);
+
             $userId = $this->createUserHandler->handle($request);
 
             return [
@@ -54,13 +58,16 @@ class UserController extends Controller
         });
     }
 
-    public function update(UpdateUserRequest $request): array|JsonResponse
+    public function update(Request $request, int $id): array|JsonResponse
     {
-        return ControllerWrapper::execWithJsonSuccessResponse(function () use ($request) {
-            $this->updateUserHandler->handle($request);
+        return ControllerWrapper::execWithJsonSuccessResponse(function () use ($request, $id) {
+            (new UpdateUserRequest())
+                ->validateRequest($request, $id);
+
+            $this->updateUserHandler->handle($request, $id);
 
             return [
-                'message' => "Usuario {$request->id} actualizado correctamente"
+                'message' => "Usuario {$id} actualizado correctamente"
             ];
         });
     }
