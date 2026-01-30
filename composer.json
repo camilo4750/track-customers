@@ -10,8 +10,10 @@
         "darkaonline/l5-swagger": "^9.0",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "tightenco/ziggy": "^2.6"
+        "tightenco/ziggy": "^2.6",
+        "tymon/jwt-auth": "^2.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -26,6 +28,7 @@
         "psr-4": {
             "App\\": "app/",
             "Internal\\Users\\": "src/Internal/Users/",
+            "Internal\\Auth\\": "src/Internal/Auth/",
             "Internal\\Shared\\": "src/Internal/Shared/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
@@ -34,7 +37,8 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Internal\\Users\\Test\\": "src/Internal/Users/Test/"
+            "Internal\\Users\\Test\\": "src/Internal/Users/Test/",
+            "Internal\\Auth\\Test\\": "src/Internal/Auth/Test/"
         }
     },
     "scripts": {
