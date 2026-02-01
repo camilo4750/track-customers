@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Internal\Users\Infrastructure\Http\Controllers\UserController;
 
-Route::get('/users', [UserController::class, 'index'])->middleware(['jwt'])->name('users.index');
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 Route::prefix('api')->middleware(['api', 'jwt'])->group(function () {
     Route::get('/users', [UserController::class, 'indexApi'])->name('users.indexApi');

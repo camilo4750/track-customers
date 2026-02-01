@@ -28,7 +28,7 @@ class DeleteUserHandler
         if (!$result) {
             throw new BusinessLogicException(
                 message: 'Error al eliminar usuario',
-                code: 404
+                code: 500
             );
         }
 
