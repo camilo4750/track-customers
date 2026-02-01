@@ -41,37 +41,15 @@ class UserRepository implements UserRepositoryInterface
 
     public function create(array $user): int
     {
-        $data = [
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'password' => Hash::make($user['password']),
-            'role' => $user['role'],
-            'status' => $user['status'] ?? 'active',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-
         return DB::table($this->getTableName())
-            ->insertGetId($data);
+            ->insertGetId($user);
     }
 
     public function update(int $id, array $user): bool
     {
-        $data = [
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'status' => $user['status'],
-            'role' => $user['role'],
-            'updated_at' => now(),
-        ];
-
-        if (isset($user['password']) && $user['password'] !== null) {
-            $data['password'] = Hash::make($user['password']);
-        }
-
         $affected = DB::table($this->getTableName())
             ->where('id', $id)
-            ->update($data);
+            ->update($user);
             
         return $affected > 0;
     }
@@ -81,7 +59,8 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findAll(?array $filters = []): array
     {
-        $query = DB::table($this->getTableName());
+        $query = DB::table($this->getTableName())
+            ->select('id', 'name', 'email', 'role', 'status', 'created_at', 'updated_at');
 
         if (!empty($filters)) {
             $query->where($filters);

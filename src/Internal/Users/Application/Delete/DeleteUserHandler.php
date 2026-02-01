@@ -18,9 +18,8 @@ class DeleteUserHandler
 
         if ($existingUser === null) {
             throw new BusinessLogicException(
-                ['id' => 'Usuario no encontrado'],
-                'Usuario no encontrado',
-                404
+                message: 'Usuario no encontrado',
+                code: 404
             );
         }
 
@@ -28,9 +27,8 @@ class DeleteUserHandler
 
         if (!$result) {
             throw new BusinessLogicException(
-                ['id' => 'No se pudo eliminar el usuario'],
-                'Error al eliminar usuario',
-                500
+                message: 'Error al eliminar usuario',
+                code: 500
             );
         }
 

@@ -2,8 +2,10 @@
 
 namespace Internal\Users\Application\Update;
 
+use Illuminate\Support\Facades\Hash;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Shared\Exceptions\BusinessLogicException;
+use Illuminate\Http\Request;
 
 class UpdateUserHandler
 {
@@ -12,22 +14,21 @@ class UpdateUserHandler
     ) {
     }
 
-    public function handle($request): bool
+    public function handle(Request $request, int $id): bool
     {
-        $existingUser = $this->userRepository->findById($request->id);
+        $existingUser = $this->userRepository->findById($id);
         
         if ($existingUser === null) {
             throw new BusinessLogicException(
-                ['id' => 'Usuario no encontrado'],
-                'Usuario no encontrado',
-                404
+                message: 'Usuario no encontrado',
+                code: 404
             );
         }
 
-        if (isset($request->email) && $request->email !== $existingUser['email']) {
-            $userWithEmail = $this->userRepository->findByEmail($request->email);
+        if ($request->input('email') !== $existingUser['email']) {
+            $userWithEmail = $this->userRepository->findByEmail($request->input('email'));
             
-            if ($userWithEmail !== null && $userWithEmail['id'] !== $request->id) {
+            if ($userWithEmail !== null && $userWithEmail['id'] !== $id) {
                 throw new BusinessLogicException(
                     ['email' => 'El correo ya está registrado'],
                     'Email duplicado'
@@ -35,21 +36,19 @@ class UpdateUserHandler
             }
         }
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'role' => $request->role,
-            'status' => $request->status,
-        ];
+        $data = $request->only(['name', 'email', 'role', 'status']);
 
-        $result = $this->userRepository->update($request->id, $data);
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->input('password'));
+        }
+
+        $result = $this->userRepository->update($id, $data);
         
         if (!$result) {
             throw new BusinessLogicException(
-                ['id' => 'No se pudo actualizar el usuario'],
-                'Error al actualizar usuario',
-                500
+                message: "Error al actualizar usuario {$id}",
+                code:500
             );
         }
         

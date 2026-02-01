@@ -10,11 +10,10 @@ class UserManagerProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->registerRoutes();
         $this->registerBindings();
     }
 
-    public function registerRoutes(): void
+    public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
     }
@@ -25,15 +24,5 @@ class UserManagerProvider extends ServiceProvider
             UserRepositoryInterface::class,
             UserRepository::class
         );
-    }
-
-    public function registerMiddleware(): void
-    {
-        $router = $this->app['router'];
-    }
-
-    public function boot(): void
-    {
-        //
     }
 }

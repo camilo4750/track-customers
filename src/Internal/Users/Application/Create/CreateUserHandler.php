@@ -2,6 +2,8 @@
 
 namespace Internal\Users\Application\Create;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Shared\Exceptions\BusinessLogicException;
 
@@ -12,9 +14,9 @@ class CreateUserHandler
     ) {
     }
 
-    public function handle($request): int
+    public function handle(Request $request): int
     {
-        $existingUser = $this->userRepository->findByEmail($request->email);
+        $existingUser = $this->userRepository->findByEmail($request->input('email'));
         
         if ($existingUser !== null) {
             throw new BusinessLogicException(
@@ -22,14 +24,10 @@ class CreateUserHandler
                 'Usuario duplicado'
             );
         }
+        $user = $request->only(['name', 'email', 'password', 'role', 'status']);
+        $user['password'] = Hash::make($request->input('password'));
 
-        return $this->userRepository->create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => $request->password,
-            'role'     => $request->role,
-            'status'   => $request->status ?? 'active'
-        ]);
+        return $this->userRepository->create($user);
     }
 }
 

@@ -2,13 +2,15 @@
 
 namespace Internal\Users\Test\Application;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Internal\Users\Application\Create\CreateUserHandler;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\LegacyMockInterface;
-use PHPUnit\Framework\TestCase;
 use Internal\Shared\Exceptions\BusinessLogicException;
+use Tests\TestCase;
 
 class CreateUserHandlerTest extends TestCase
 {
@@ -37,13 +39,13 @@ class CreateUserHandlerTest extends TestCase
     public function test_it_creates_a_user_successfully(): void
     {
         // Arrange
-        $request = (object) [
+        $request = Request::create('/dummy', 'POST', [
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
             'role' => 'user',
             'status' => 'active',
-        ];
+        ]);
 
         /** @var LegacyMockInterface $mockRepository */
         $mockRepository = $this->userRepository;
@@ -60,7 +62,7 @@ class CreateUserHandlerTest extends TestCase
                 return is_array($arg)
                     && $arg['name'] === 'John Doe'
                     && $arg['email'] === 'john.doe@example.com'
-                    && $arg['password'] === 'password123'
+                    && Hash::check('password123', $arg['password'])
                     && $arg['role'] === 'user'
                     && $arg['status'] === 'active';
             }))
@@ -77,13 +79,13 @@ class CreateUserHandlerTest extends TestCase
     public function test_it_throws_exception_when_email_already_exists(): void
     {
         // Arrange
-        $request = (object) [
+        $request = Request::create('/dummy', 'POST', [
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
             'role' => 'admin',
             'status' => 'active',
-        ];
+        ]);
 
         $existingUser = [
             'id' => 1,

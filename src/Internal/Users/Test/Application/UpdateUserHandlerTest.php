@@ -2,13 +2,14 @@
 
 namespace Internal\Users\Test\Application;
 
+use Illuminate\Http\Request;
 use Internal\Users\Application\Update\UpdateUserHandler;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\LegacyMockInterface;
-use PHPUnit\Framework\TestCase;
 use Internal\Shared\Exceptions\BusinessLogicException;
+use Tests\TestCase;
 
 class UpdateUserHandlerTest extends TestCase
 {
@@ -37,14 +38,12 @@ class UpdateUserHandlerTest extends TestCase
     public function test_it_updates_a_user_successfully(): void
     {
         // Arrange
-        $request = (object) [
-            'id' => 1,
+        $request = Request::create('/dummy', 'PUT', [
             'name' => 'John Updated',
             'email' => 'john.doe@example.com',
-            'password' => null,
             'role' => 'user',
             'status' => 'active',
-        ];
+        ]);
 
         $existingUser = [
             'id' => 1,
@@ -72,7 +71,7 @@ class UpdateUserHandlerTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $this->handler->handle($request);
+        $result = $this->handler->handle($request, 1);
 
         // Assert
         $this->assertTrue($result);
@@ -81,14 +80,13 @@ class UpdateUserHandlerTest extends TestCase
     public function test_it_updates_user_password(): void
     {
         // Arrange
-        $request = (object) [
-            'id' => 1,
+        $request = Request::create('/dummy', 'PUT', [
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'newpassword123',
             'role' => 'user',
             'status' => 'active',
-        ];
+        ]);
 
         $existingUser = [
             'id' => 1,
@@ -113,7 +111,7 @@ class UpdateUserHandlerTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $this->handler->handle($request);
+        $result = $this->handler->handle($request, 1);
 
         // Assert
         $this->assertTrue($result);
