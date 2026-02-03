@@ -3,7 +3,7 @@
 namespace Internal\Users\Infrastructure\Repositories;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
@@ -19,24 +19,22 @@ class UserRepository implements UserRepositoryInterface
             ->where('email', $email)
             ->first();
 
-        if (is_null($user)) {
+        if ($user === null) {
             return null;
         }
 
         return (array) $user;
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id): ?User
     {
-        $user = DB::table($this->getTableName())
-            ->where('id', $id)
-            ->first();
+        $user = User::select('id', 'name', 'email', 'status')->find($id);
 
-        if (is_null($user)) {
+        if ($user === null) {
             return null;
         }
 
-        return (array) $user;
+        return $user;
     }
 
     public function create(array $user): int
@@ -60,16 +58,16 @@ class UserRepository implements UserRepositoryInterface
     public function findAll(?array $filters = []): array
     {
         $query = DB::table($this->getTableName())
-            ->select('id', 'name', 'email', 'role', 'status', 'created_at', 'updated_at');
+            ->select('users.id', 'users.name', 'users.email', 'users.status', 'users.created_at', 'users.updated_at', 'roles.name as role')
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id');
 
         if (!empty($filters)) {
             $query->where($filters);
         }
 
-        return $query
-        ->orderBy('id', 'desc')
-        ->get()
-        ->toArray();
+        
+        return $query->orderBy('id', 'desc')->get()->toArray();
     }
 
     public function delete(int $id): bool

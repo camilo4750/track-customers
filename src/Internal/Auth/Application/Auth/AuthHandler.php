@@ -40,7 +40,8 @@ class AuthHandler
 
         return [
             'access_token' => $this->jwt->fromUser($user),
-            'expires_in' => $this->jwt->factory()->getTTL() * 60,
+            'expires_in' => $this->jwt->factory()->getTTL(),
+            'user' => $user,
         ];
     }
 }

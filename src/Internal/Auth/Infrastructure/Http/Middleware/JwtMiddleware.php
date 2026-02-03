@@ -21,6 +21,12 @@ class JwtMiddleware
     {
         try {
             $user = $this->jwt->parseToken()->authenticate();
+            if(!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado',
+                ], 404);
+            }
             if($user->status !== 'active') {
                 return response()->json([
                     'success' => false,
