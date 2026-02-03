@@ -5,6 +5,8 @@ namespace Internal\Users\Infrastructure\Http\Providers;
 use Illuminate\Support\ServiceProvider;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Users\Infrastructure\Repositories\UserRepository;
+use Internal\Users\Infrastructure\Interfaces\ModelHasRoleRepositoryInterface;
+use Internal\Users\Infrastructure\Repositories\ModelHasRoleRepository;
 
 class UserManagerProvider extends ServiceProvider
 {
@@ -23,6 +25,10 @@ class UserManagerProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class
+        );
+        $this->app->bind(
+            ModelHasRoleRepositoryInterface::class,
+            ModelHasRoleRepository::class
         );
     }
 }
