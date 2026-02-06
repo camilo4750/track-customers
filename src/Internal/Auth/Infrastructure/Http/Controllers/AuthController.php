@@ -27,8 +27,9 @@ class AuthController extends Controller
             );
 
             return [
-                'email' => $request->input('email'),
                 'token' => $auth['access_token'],
+                'expires_in' => $auth['expires_in'],
+                'user' => $auth['user'],
             ];
         });
     }

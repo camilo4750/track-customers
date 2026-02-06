@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Internal\Auth\Infrastructure\Http\Controllers\AuthController;
+use Inertia\Inertia;
 
 Route::prefix('api')->middleware('api')->group(function () {
     Route::prefix('auth')->group(function () {

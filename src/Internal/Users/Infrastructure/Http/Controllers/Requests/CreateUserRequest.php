@@ -14,8 +14,8 @@ class CreateUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'password_confirmation' => 'required|string|min:8|same:password',
-            'role' => 'required|string|in:user,admin',
             'status' => 'required|string|in:active,inactive',
+            'role' => 'required|string|in:admin,user',
         ], [
             'name.required' => 'El nombre es requerido',
             'name.string' => 'El nombre debe ser una cadena de texto',
@@ -28,8 +28,10 @@ class CreateUserRequest extends FormRequest
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'password_confirmation.required' => 'La confirmación de la contraseña es requerida',
             'password_confirmation.same' => 'La confirmación de la contraseña no coincide',
-            'role.required' => 'El rol es requerido',
             'status.required' => 'El estado es requerido',
+            'role.required' => 'El rol es requerido',
+            'role.string' => 'El rol debe ser una cadena de texto',
+            'role.in' => 'El rol debe ser admin o user, no se permiten otros valores',
         ]);
     }
 }

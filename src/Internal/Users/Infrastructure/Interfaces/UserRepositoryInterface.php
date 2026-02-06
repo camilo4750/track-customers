@@ -2,11 +2,13 @@
 
 namespace Internal\Users\Infrastructure\Interfaces;
 
+use App\Models\User;
+
 interface UserRepositoryInterface
 {
     public function findByEmail(string $email): ?array;
 
-    public function findById(int $id): ?array;
+    public function findById(int $id): ?User;
 
     public function create(array $user): int;
 

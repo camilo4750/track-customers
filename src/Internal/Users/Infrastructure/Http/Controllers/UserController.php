@@ -13,6 +13,8 @@ use Internal\Users\Application\List\ListUsersHandler;
 use Internal\Users\Application\Update\UpdateUserHandler;
 use Internal\Users\Infrastructure\Http\Controllers\Requests\CreateUserRequest;
 use Internal\Users\Infrastructure\Http\Controllers\Requests\UpdateUserRequest;
+use Internal\Users\Application\Permission\ListUserPermissionsHandler;
+use Internal\Users\Application\Permission\PermissionUserHandler;
 
 class UserController extends Controller
 {
@@ -20,17 +22,15 @@ class UserController extends Controller
         private CreateUserHandler $createUserHandler,
         private DeleteUserHandler $deleteUserHandler,
         private ListUsersHandler $listUsersHandler,
-        private UpdateUserHandler $updateUserHandler
+        private UpdateUserHandler $updateUserHandler,
+        private ListUserPermissionsHandler $listUserPermissionsHandler,
+        private PermissionUserHandler $permissionUserHandler
     ) {
     }
 
     public function index()
-    {   
-        $requestFilters = request()->only(['role', 'status']);
-        $users = $this->listUsersHandler->handle($requestFilters);
-        return Inertia::render('users/pages/User', [
-            'data' => $users
-        ]);
+    {
+        return Inertia::render('users/pages/User');
     }
 
     public function indexApi(): array|JsonResponse {
@@ -65,7 +65,7 @@ class UserController extends Controller
                 ->validateRequest($request, $id);
 
             $this->updateUserHandler->handle($request, $id);
-
+      
             return [
                 'message' => "Usuario {$id} actualizado correctamente"
             ];
@@ -81,4 +81,30 @@ class UserController extends Controller
             ];
         });
     }
+
+    public function permissions(int $id)
+    {
+        return Inertia::render('users/pages/UserPermissions', ['id' => $id]);
+    }
+
+    public function permissionsApi(int $id): array|JsonResponse
+    {
+        return ControllerWrapper::execWithJsonSuccessResponse(function () use ($id) {
+            $data = $this->listUserPermissionsHandler->handle(request(), $id);
+            return [
+                'message' => "Permisos listados correctamente",
+                'data' => $data
+            ];
+        });
+    }
+
+    public function syncPermissions(Request $request, int $id): array|JsonResponse
+    {
+        return ControllerWrapper::execWithJsonSuccessResponse(function () use ($request, $id) {
+        $this->permissionUserHandler->handle($request, $id);
+        return [
+            'message' => "Permisos sincronizados correctamente"
+        ];
+    });
+}
 }

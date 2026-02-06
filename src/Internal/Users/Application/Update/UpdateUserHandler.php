@@ -6,14 +6,15 @@ use Illuminate\Support\Facades\Hash;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Shared\Exceptions\BusinessLogicException;
 use Illuminate\Http\Request;
-
+use Internal\Users\Infrastructure\Interfaces\ModelHasRoleRepositoryInterface;
 class UpdateUserHandler
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
+        private ModelHasRoleRepositoryInterface $modelHasRoleRepository,
     ) {
     }
-
+// debemos actualizar el rol del usuario
     public function handle(Request $request, int $id): bool
     {
         $existingUser = $this->userRepository->findById($id);
@@ -36,7 +37,7 @@ class UpdateUserHandler
             }
         }
 
-        $data = $request->only(['name', 'email', 'role', 'status']);
+        $data = $request->only(['name', 'email', 'status']);
 
 
         if ($request->filled('password')) {
@@ -44,6 +45,9 @@ class UpdateUserHandler
         }
 
         $result = $this->userRepository->update($id, $data);
+        
+        $this->modelHasRoleRepository->delete($existingUser);
+        $this->modelHasRoleRepository->create($existingUser, $request->input('role'));
         
         if (!$result) {
             throw new BusinessLogicException(
