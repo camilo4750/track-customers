@@ -7,7 +7,10 @@ use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Users\Infrastructure\Repositories\UserRepository;
 use Internal\Users\Infrastructure\Interfaces\ModelHasRoleRepositoryInterface;
 use Internal\Users\Infrastructure\Repositories\ModelHasRoleRepository;
-
+use Internal\Users\Infrastructure\Interfaces\PermissionRepositoryInterface;
+use Internal\Users\Infrastructure\Repositories\PermissionRepository;
+use Internal\Users\Infrastructure\Interfaces\ModelHasPermissionRepositoryInterface;
+use Internal\Users\Infrastructure\Repositories\ModelHasPermissionRepository;
 class UserManagerProvider extends ServiceProvider
 {
     public function register(): void
@@ -29,6 +32,14 @@ class UserManagerProvider extends ServiceProvider
         $this->app->bind(
             ModelHasRoleRepositoryInterface::class,
             ModelHasRoleRepository::class
+        );
+        $this->app->bind(
+            PermissionRepositoryInterface::class,
+            PermissionRepository::class
+        );
+        $this->app->bind(
+            ModelHasPermissionRepositoryInterface::class,
+            ModelHasPermissionRepository::class
         );
     }
 }

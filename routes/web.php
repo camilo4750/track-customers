@@ -3,12 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('home/pages/HomePage');
-});
 
 // Rutas de autenticación (vistas)
-Route::get('/login', function () {
+Route::get('/', function () {
     return Inertia::render('auth/pages/Login');
 })->name('login.view');
 

@@ -3,18 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Internal\Users\Infrastructure\Http\Controllers\UserController;
 
-Route::middleware(['role:admin'])->group(function () {
-    Route::get('/users', [UserController::class, 'index'])
-        ->name('users.index');
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
 
-    Route::get('/users/{id}/permissions', [UserController::class, 'permissions'])
-        ->name('users.permissions');
-
-});
-
+Route::get('/users/{id}/permissions', [UserController::class, 'permissions'])
+    ->name('users.permissions');
 
 Route::prefix('api')
-    ->middleware(['api', 'role:admin'])
+    ->middleware(['api', 'jwt', 'role:admin'])
     ->group(function () {
 
         Route::get('/users', [UserController::class, 'indexApi'])
@@ -29,4 +25,9 @@ Route::prefix('api')
         Route::delete('/users/{id}', [UserController::class, 'destroy'])
             ->name('users.destroy');
 
+        Route::get('/users/{id}/permissions', [UserController::class, 'permissionsApi'])
+            ->name('users.permissions.api');
+
+        Route::put('/users/{id}/permissions-sync', [UserController::class, 'syncPermissions'])
+            ->name('users.permissions.sync');
     });

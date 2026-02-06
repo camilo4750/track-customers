@@ -16,7 +16,7 @@ class ListUsersHandler
         $filters = [];
 
         if (isset($requestFilters['role']) && $requestFilters['role'] !== null && $requestFilters['role'] !== '') {
-            $filters['role'] = $requestFilters['role'];
+            $filters['roles.name'] = $requestFilters['role'];
         }
 
         if (isset($requestFilters['status']) && $requestFilters['status'] !== null && $requestFilters['status'] !== '') {
