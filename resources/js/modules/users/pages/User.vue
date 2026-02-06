@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -26,6 +26,8 @@ import { showToast } from '../../../composables/useToast';
 import { useUserPanel } from '../composables/useUserPanel';
 import { useModal } from '../../../composables/useModal';
 import ConfirmDeleteUserModal from '../components/ConfirmDeleteUserModal.vue';
+import { router } from '@inertiajs/vue3';
+import { requireRole, requirePermission } from '@/utils/authGuard';
 
 const props = defineProps({
     data: {
@@ -128,8 +130,7 @@ const handleApplyFilters = async () => {
 };
 
 const handleRoles = (user) => {
-    console.log('Gestionar roles de usuario:', user);
-    // Aquí se implementará la lógica de roles en el futuro
+    router.visit(route('users.permissions', { id: user.id }));
 };
 
 const handleDelete = (user) => {
@@ -165,6 +166,13 @@ const handleDelete = (user) => {
     });
 };
 
+onMounted(() => {
+    if (requireRole('admin', '/dashboard') && requirePermission('User.show', '/dashboard')) {
+        getUsers();
+    } else {
+        router.visit('/dashboard');
+    }
+});
 </script>
 
 <template>

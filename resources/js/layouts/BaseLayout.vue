@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted, onUnmounted } from 'vue';
+    import { ref, computed, onMounted, onUnmounted } from 'vue';
     import { router } from '@inertiajs/vue3';
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     import { faBars, faXmark, faMap } from '@fortawesome/free-solid-svg-icons';
@@ -9,12 +9,21 @@
     import DarkModeToggle from './components/DarkModeToggle.vue';
     import GlobalModal from '../components/GlobalModal.vue';
     import { useTheme } from '../composables/useTheme';
+    import { useAuth } from '../composables/useAuth';
     import { faHome, faStore, faList, faLocationDot, faUsers, faPercent } from '@fortawesome/free-solid-svg-icons';
 
     const isOpen = ref(true);
     const isMobileMenuOpen = ref(false);
     const isMobile = ref(false);
     const { loadTheme } = useTheme();
+    const { logout, getUserFromToken } = useAuth();
+
+
+    // Datos del usuario desde el token JWT
+    const currentUser = computed(() => getUserFromToken());
+    const userName = computed(() => currentUser.value?.name);
+    const userRole = computed(() => currentUser.value?.roles[0]);
+    
 
     const MOBILE_BREAKPOINT = 768;
 
@@ -46,19 +55,27 @@
         isMobileMenuOpen.value = false;
     };
 
-    const handleLogout = () => {
-        console.log('Logout clicked');
+    const handleLogout = async () => {
+        await logout();
     };
 
-    const menu = [
-        { label: 'Dashboard', icon: faHome, route: '' },
-        { label: 'Users', icon: faUsers, route: 'users.index' },
-        { label: 'Marketplace', icon: faStore, route: '' },
-        { label: 'Orders', icon: faList, route: '' },
-        { label: 'Tracking', icon: faLocationDot, route: '' },
-        { label: 'Customers', icon: faUsers, route: '' },
-        { label: 'Discounts', icon: faPercent, route: '' }
-    ];
+    const menu = computed(() => {
+        const allItems = [
+            { label: 'Dashboard', icon: faHome, route: 'dashboard' },
+            { label: 'Usuarios', icon: faUsers, route: 'users.index', roles: ['admin'], permissions: ['User.show'] },
+            { label: 'Marketplace', icon: faStore, route: '' },
+            { label: 'Órdenes', icon: faList, route: '' },
+            { label: 'Seguimiento', icon: faLocationDot, route: '' },
+            { label: 'Clientes', icon: faUsers, route: '' },
+            { label: 'Descuentos', icon: faPercent, route: '' }
+        ];
+        const userRoles = currentUser.value?.roles || [];
+        const userPermissions = currentUser.value?.permissions || [];
+        return allItems.filter(item =>
+            !item.roles || item.roles.some(r => userRoles.includes(r)) &&
+            !item.permissions || item.permissions.some(p => userPermissions.includes(p))
+        );
+    });
 </script>
 
 <template>
@@ -73,7 +90,7 @@
             <SidebarHeader :is-open="isOpen" @toggle="isOpen = !isOpen" />
             <SidebarMenu :items="menu" :is-open="isOpen" />
             <DarkModeToggle :is-open="isOpen" />
-            <SidebarFooter :is-open="isOpen" user-name="Harper Nelson" user-role="Admin" @logout="handleLogout" />
+            <SidebarFooter :is-open="isOpen" :user-name="userName" :user-role="userRole" @logout="handleLogout" />
         </aside>
 
         <!-- Header móvil: visible solo por debajo de md -->
@@ -134,7 +151,7 @@
                 </div>
                 <SidebarMenu :items="menu" :is-open="true" />
                 <DarkModeToggle :is-open="true" />
-                <SidebarFooter :is-open="true" user-name="Harper Nelson" user-role="Admin" @logout="handleLogout" />
+                <SidebarFooter :is-open="true" :user-name="userName" :user-role="userRole" @logout="handleLogout" />
             </aside>
         </Transition>
 

@@ -127,10 +127,12 @@ export function useAuth() {
         }
 
         return {
-            id: payload.sub || payload.user_id || null,
+            id: payload.sub || null,
             email: payload.email || null,
             name: payload.name || null,
-            ...payload // Incluir cualquier otro dato del payload
+            permissions: payload.permissions || null,
+            roles: payload.roles || null,
+            ...payload
         };
     };
 
@@ -159,13 +161,12 @@ export function useAuth() {
         axios.interceptors.response.use(
             (response) => response,
             (error) => {
-                // Si el token expiró o es inválido (401)
-                if (error.response?.status === 401) {
+                const status = error.response?.status;   
+                if ([401, 403, 404].includes(status)) {
                     removeToken();
                     
-                    // Redirigir al login (puedes personalizar esta lógica)
-                    if (window.location.pathname !== '/login') {
-                        window.location.href = '/login';
+                    if (window.location.pathname !== '/') {
+                        window.location.href = '/';
                     }
                 }
 
@@ -188,12 +189,11 @@ export function useAuth() {
                 password
             });
 
-            // El backend puede retornar token en response.data o response.data.data
             const data = response.data.data || response.data;
             const authToken = data.token;
 
             if (response.data.success && authToken) {
-                const expiresIn = data.expires_in || 60; // minutos
+                const expiresIn = data.expires_in || 60;
                 setToken(authToken, expiresIn);
 
                 return response.data;

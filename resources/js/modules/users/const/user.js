@@ -56,3 +56,7 @@ export const FILTERABLE_COLUMNS = [
     { field: 'role', type: 'text', matchMode: 'contains' },  // Rol con dropdown personalizado
     { field: 'status', type: 'text', matchMode: 'contains' }  // Estado con dropdown personalizado
 ];
+
+
+export const MODULE_LABELS = { User: 'Usuario'};
+export const ACTION_LABELS = { show: 'Ver', create: 'Crear', edit: 'Editar', delete: 'Eliminar' };
