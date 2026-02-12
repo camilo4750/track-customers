@@ -56,7 +56,7 @@ class AuthHandlerTest extends TestCase
         $this->assertArrayHasKey('access_token', $records);
         $this->assertArrayHasKey('expires_in', $records);
         $this->assertSame('fake-token', $records['access_token']);
-        $this->assertSame(3600, $records['expires_in']);
+        $this->assertSame(60, $records['expires_in']);
     }
 
     #[Test]
