@@ -2,6 +2,7 @@
 
 namespace Internal\Users\Test\Application;
 
+use App\Models\User;
 use Internal\Users\Application\Delete\DeleteUserHandler;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Internal\Shared\Exceptions\BusinessLogicException;
@@ -37,11 +38,10 @@ class DeleteUserHandlerTest extends TestCase
     public function test_it_deletes_a_user_successfully(): void
     {
         $id = 1;
-        $existingUser = [
-            'id' => 1,
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
-        ];
+        $existingUser = new User();
+        $existingUser->id = 1;
+        $existingUser->name = 'John Doe';
+        $existingUser->email = 'john.doe@example.com';
 
         /** @var LegacyMockInterface $mockRepository */
         $mockRepository = $this->userRepository;

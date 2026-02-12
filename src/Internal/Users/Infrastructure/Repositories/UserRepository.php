@@ -67,7 +67,7 @@ class UserRepository implements UserRepositoryInterface
         }
 
         
-        return $query->orderBy('id', 'desc')->get()->toArray();
+        return $query->orderBy('users.id', 'desc')->get()->toArray();
     }
 
     public function delete(int $id): bool

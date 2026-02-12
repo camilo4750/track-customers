@@ -2,6 +2,7 @@
 
 namespace Internal\Users\Test\Infrastructure;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Internal\Users\Infrastructure\Repositories\UserRepository;
 use Tests\TestCase;
@@ -18,13 +19,17 @@ class UserRepositoryTest extends TestCase
         $this->repository = new UserRepository();
     }
 
+    public function test_get_table_name_returns_users(): void
+    {
+        $this->assertSame('users', $this->repository->getTableName());
+    }
+
     public function test_it_can_create_a_user(): void
     {
         $userData = [
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
@@ -46,7 +51,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
@@ -73,7 +77,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
@@ -81,12 +84,14 @@ class UserRepositoryTest extends TestCase
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
         $created1 = $this->repository->create($user1);
         $created2 = $this->repository->create($user2);
+
+        User::find($created1)?->assignRole('user');
+        User::find($created2)?->assignRole('user');
 
         $users = $this->repository->findAll();
 
@@ -106,7 +111,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
@@ -114,10 +118,10 @@ class UserRepositoryTest extends TestCase
 
         $foundUser = $this->repository->findById($userId);
 
-        $this->assertIsArray($foundUser);
-        $this->assertEquals($userId, $foundUser['id']);
-        $this->assertEquals('john.doe@example.com', $foundUser['email']);
-        $this->assertEquals('John Doe', $foundUser['name']);
+        $this->assertInstanceOf(\App\Models\User::class, $foundUser);
+        $this->assertEquals($userId, $foundUser->id);
+        $this->assertEquals('john.doe@example.com', $foundUser->email);
+        $this->assertEquals('John Doe', $foundUser->name);
     }
     
     public function test_it_returns_null_when_user_not_found_by_id(): void
@@ -133,7 +137,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
@@ -143,7 +146,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Updated',
             'email' => 'john.updated@example.com',
             'password' => 'newpassword123',
-            'role' => 'user',
             'status' => 'active',
         ]);
 
@@ -163,7 +165,6 @@ class UserRepositoryTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password123',
-            'role' => 'user',
             'status' => 'active',
         ];
 
