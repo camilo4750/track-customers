@@ -2,8 +2,10 @@
 
 namespace Internal\Users\Test\Application;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Internal\Users\Application\Update\UpdateUserHandler;
+use Internal\Users\Infrastructure\Interfaces\ModelHasRoleRepositoryInterface;
 use Internal\Users\Infrastructure\Interfaces\UserRepositoryInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -17,6 +19,10 @@ class UpdateUserHandlerTest extends TestCase
 
     /** @var UserRepositoryInterface&LegacyMockInterface */
     private UserRepositoryInterface $userRepository;
+
+    /** @var ModelHasRoleRepositoryInterface&LegacyMockInterface */
+    private ModelHasRoleRepositoryInterface $modelHasRoleRepository;
+
     private UpdateUserHandler $handler;
 
     protected function setUp(): void
@@ -26,7 +32,12 @@ class UpdateUserHandlerTest extends TestCase
         /** @var UserRepositoryInterface&LegacyMockInterface $mock */
         $mock = Mockery::mock(UserRepositoryInterface::class);
         $this->userRepository = $mock;
-        $this->handler = new UpdateUserHandler($this->userRepository);
+
+        /** @var ModelHasRoleRepositoryInterface&LegacyMockInterface $mockRole */
+        $mockRole = Mockery::mock(ModelHasRoleRepositoryInterface::class);
+        $this->modelHasRoleRepository = $mockRole;
+
+        $this->handler = new UpdateUserHandler($this->userRepository, $this->modelHasRoleRepository);
     }
 
     protected function tearDown(): void
@@ -45,12 +56,11 @@ class UpdateUserHandlerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $existingUser = [
-            'id' => 1,
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
-            'status' => 'active',
-        ];
+        $existingUser = new User();
+        $existingUser->id = 1;
+        $existingUser->name = 'John Doe';
+        $existingUser->email = 'john.doe@example.com';
+        $existingUser->status = 'active';
 
         /** @var LegacyMockInterface $mockRepository */
         $mockRepository = $this->userRepository;
@@ -70,6 +80,11 @@ class UpdateUserHandlerTest extends TestCase
             }))
             ->andReturn(true);
 
+        /** @var LegacyMockInterface $mockRoleRepository */
+        $mockRoleRepository = $this->modelHasRoleRepository;
+        $mockRoleRepository->shouldReceive('delete')->once()->with($existingUser);
+        $mockRoleRepository->shouldReceive('create')->once()->with($existingUser, 'user')->andReturnSelf();
+
         // Act
         $result = $this->handler->handle($request, 1);
 
@@ -88,11 +103,10 @@ class UpdateUserHandlerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $existingUser = [
-            'id' => 1,
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
-        ];
+        $existingUser = new User();
+        $existingUser->id = 1;
+        $existingUser->name = 'John Doe';
+        $existingUser->email = 'john.doe@example.com';
 
         /** @var LegacyMockInterface $mockRepository */
         $mockRepository = $this->userRepository;
@@ -109,6 +123,11 @@ class UpdateUserHandlerTest extends TestCase
                 return is_array($arg) && isset($arg['password']);
             }))
             ->andReturn(true);
+
+        /** @var LegacyMockInterface $mockRoleRepository */
+        $mockRoleRepository = $this->modelHasRoleRepository;
+        $mockRoleRepository->shouldReceive('delete')->once()->with($existingUser);
+        $mockRoleRepository->shouldReceive('create')->once()->with($existingUser, 'user')->andReturnSelf();
 
         // Act
         $result = $this->handler->handle($request, 1);

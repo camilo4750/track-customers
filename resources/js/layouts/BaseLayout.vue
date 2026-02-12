@@ -66,7 +66,7 @@
             { label: 'Marketplace', icon: faStore, route: '' },
             { label: 'Órdenes', icon: faList, route: '' },
             { label: 'Seguimiento', icon: faLocationDot, route: '' },
-            { label: 'Clientes', icon: faUsers, route: '' },
+            { label: 'Clientes', icon: faUsers, route: 'clients.index' },
             { label: 'Descuentos', icon: faPercent, route: '' }
         ];
         const userRoles = currentUser.value?.roles || [];
