@@ -30,6 +30,7 @@
             "App\\": "app/",
             "Internal\\Users\\": "src/Internal/Users/",
             "Internal\\Auth\\": "src/Internal/Auth/",
+            "Internal\\Clients\\": "src/Internal/Clients/",
             "Internal\\Shared\\": "src/Internal/Shared/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
@@ -39,7 +40,8 @@
         "psr-4": {
             "Tests\\": "tests/",
             "Internal\\Users\\Test\\": "src/Internal/Users/Test/",
-            "Internal\\Auth\\Test\\": "src/Internal/Auth/Test/"
+            "Internal\\Auth\\Test\\": "src/Internal/Auth/Test/",
+            "Internal\\Clients\\Test\\": "src/Internal/Clients/Test/"
         }
     },
     "scripts": {
