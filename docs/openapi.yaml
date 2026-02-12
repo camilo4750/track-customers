@@ -2,54 +2,141 @@ openapi: 3.0.0
 info:
   title: Track Clients API
   version: 1.0.0
-  description: API para la gestión de usuarios del sistema Track Clients
+  description: |
+    API para la gestión de usuarios del sistema Track Clients.
+    Autenticación JWT (cookie `jwt_token` o header `Authorization: Bearer <token>`).
+    Todas las respuestas exitosas siguen el formato `{ success, message, data? }`.
 
 servers:
   - url: http://localhost:8000
     description: Servidor de desarrollo
 
 tags:
+  - name: Auth
+    description: Autenticación JWT (login, logout)
   - name: Users
-    description: Endpoints para la gestión de usuarios
+    description: Gestión de usuarios
+  - name: Permissions
+    description: Permisos por usuario (Spatie)
+
+security:
+  - bearerAuth: []
 
 paths:
-  /api/users:
-    get:
-      summary: Listar todos los usuarios
-      description: Obtiene una lista de todos los usuarios registrados en el sistema
-      operationId: listUsers
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión
+      description: "Devuelve un token JWT y los datos del usuario. El token puede enviarse en cookie jwt_token o en header Authorization: Bearer <token>."
+      operationId: login
       tags:
-        - Users
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Lista de usuarios obtenida exitosamente
+          description: Login exitoso
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas o usuario inactivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /api/auth/logout:
+    post:
+      summary: Cerrar sesión
+      description: Invalida el token JWT. Requiere autenticación.
+      operationId: logout
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Sesión cerrada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users:
+    get:
+      summary: Listar usuarios
+      description: Lista usuarios con filtros opcionales por rol y estado. Requiere JWT.
+      operationId: listUsers
+      tags:
+        - Users
+      parameters:
+        - name: role
+          in: query
+          description: Filtrar por rol
+          schema:
+            type: string
+            enum: [user, admin]
+        - name: status
+          in: query
+          description: Filtrar por estado
+          schema:
+            type: string
+            enum: [active, inactive]
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserList'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     post:
-      summary: Crear un nuevo usuario
-      description: Crea un nuevo usuario en el sistema con los datos proporcionados
+      summary: Crear usuario
+      description: Crea un nuevo usuario. Requiere JWT y rol admin.
       operationId: createUser
       tags:
         - Users
       requestBody:
         required: true
-        description: Datos del usuario a crear
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateUserRequest'
       responses:
         '200':
-          description: Usuario creado exitosamente
+          description: Usuario creado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Error de validación
           content:
@@ -59,8 +146,8 @@ paths:
 
   /api/users/{id}:
     put:
-      summary: Actualizar un usuario existente
-      description: Actualiza los datos de un usuario existente en el sistema
+      summary: Actualizar usuario
+      description: Actualiza un usuario existente. Requiere JWT y rol admin.
       operationId: updateUser
       tags:
         - Users
@@ -68,24 +155,125 @@ paths:
         - name: id
           in: path
           required: true
-          description: ID del usuario a actualizar
           schema:
             type: integer
             example: 1
       requestBody:
         required: true
-        description: Datos del usuario a actualizar
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateUserRequest'
       responses:
         '200':
-          description: Usuario actualizado exitosamente
+          description: Usuario actualizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: No autenticado
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+    delete:
+      summary: Eliminar usuario
+      description: Elimina un usuario por ID. Requiere JWT y rol admin.
+      operationId: deleteUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Usuario eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: No autenticado
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/permissions:
+    get:
+      summary: Listar permisos del usuario
+      description: Devuelve permisos agrupados por módulo y los IDs asignados al usuario. Requiere JWT.
+      operationId: listUserPermissions
+      tags:
+        - Permissions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Permisos listados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserPermissions'
+        '401':
+          description: No autenticado
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/permissions-sync:
+    put:
+      summary: Sincronizar permisos del usuario
+      description: Reemplaza los permisos directos del usuario por la lista indicada. Requiere JWT y rol admin.
+      operationId: syncUserPermissions
+      tags:
+        - Permissions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncPermissionsRequest'
+      responses:
+        '200':
+          description: Permisos sincronizados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: No autenticado
         '404':
           description: Usuario no encontrado
           content:
@@ -100,6 +288,13 @@ paths:
                 $ref: '#/components/schemas/ValidationErrorResponse'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT (también aceptado en cookie `jwt_token`)
+
   schemas:
     User:
       type: object
@@ -133,6 +328,112 @@ components:
           type: string
           format: date-time
 
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        password:
+          type: string
+          format: password
+          example: password
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+        token:
+          type: string
+          description: JWT access token
+        expires_in:
+          type: integer
+          description: TTL del token en minutos
+        user:
+          $ref: '#/components/schemas/User'
+
+    LogoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Sesión cerrada correctamente
+
+    ApiResponseUserList:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Usuarios listados correctamente
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+    ApiResponseUserPermissions:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Permisos listados correctamente
+        data:
+          type: object
+          properties:
+            userId:
+              type: integer
+              example: 1
+            userName:
+              type: string
+              example: Juan Pérez
+            permissionsByModule:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    action:
+                      type: string
+            userPermissionIds:
+              type: array
+              items:
+                type: integer
+              example: [1, 2, 3]
+
+    SyncPermissionsRequest:
+      type: object
+      required:
+        - permission_ids
+      properties:
+        permission_ids:
+          type: array
+          items:
+            type: integer
+          description: IDs de permisos (Spatie) a asignar al usuario
+          example: [1, 2, 5]
+
     CreateUserRequest:
       type: object
       required:
@@ -142,74 +443,68 @@ components:
       properties:
         name:
           type: string
-          description: Nombre completo del usuario
-          example: Juan Pérez
           maxLength: 255
+          example: Juan Pérez
         email:
           type: string
           format: email
-          description: Correo electrónico único del usuario
-          example: juan@example.com
           maxLength: 255
+          example: juan@example.com
         password:
           type: string
           format: password
-          description: Contraseña del usuario (mínimo 8 caracteres)
-          example: password123
           minLength: 8
+          example: password123
         password_confirmation:
           type: string
           format: password
-          description: Confirmación de la contraseña
           example: password123
         role:
           type: string
           enum: [user, admin]
-          description: Rol del usuario
-          example: user
           default: user
         status:
           type: string
           enum: [active, inactive]
-          description: Estado del usuario
-          example: active
           default: active
 
     UpdateUserRequest:
       type: object
       required:
-        - id
+        - name
+        - email
+        - role
+        - status
       properties:
-        id:
-          type: integer
-          description: ID del usuario
-          example: 1
         name:
           type: string
-          description: Nombre completo del usuario
-          example: Juan Pérez
           maxLength: 255
+          example: Juan Pérez
         email:
           type: string
           format: email
-          description: Correo electrónico único del usuario
-          example: juan@example.com
           maxLength: 255
+          example: juan@example.com
         password:
           type: string
           format: password
-          description: Nueva contraseña del usuario (mínimo 8 caracteres)
-          example: newpassword123
           minLength: 8
+          description: Opcional; si se envía, se actualiza la contraseña
+        role:
+          type: string
+          enum: [user, admin]
+          example: user
         status:
           type: string
           enum: [active, inactive]
-          description: Estado del usuario
           example: active
 
     SuccessResponse:
       type: object
       properties:
+        success:
+          type: boolean
+          example: true
         message:
           type: string
           example: Usuario 1 Creado correctamente
@@ -217,25 +512,33 @@ components:
     ErrorResponse:
       type: object
       properties:
+        success:
+          type: boolean
+          example: false
         message:
           type: string
           example: Usuario no encontrado
+        code:
+          type: integer
+          example: 404
+        errors:
+          type: object
+          additionalProperties:
+            type: string
 
     ValidationErrorResponse:
       type: object
       properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: integer
+          example: 422
+        message:
+          type: string
+          example: Error al validar los datos
         errors:
           type: object
-          properties:
-            name:
-              type: array
-              items:
-                type: string
-            email:
-              type: array
-              items:
-                type: string
-            password:
-              type: array
-              items:
-                type: string
+          additionalProperties:
+            type: string

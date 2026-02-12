@@ -14,6 +14,7 @@
         <testsuite name="Internal">
             <directory>src/Internal/Users/Test</directory>
             <directory>src/Internal/Auth/Test</directory>
+            <directory>src/Internal/Clients/Test</directory>
         </testsuite>
     </testsuites>
     <source>
