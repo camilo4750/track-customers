@@ -22,6 +22,8 @@ tags:
     description: Permisos por usuario (Spatie)
   - name: Products
     description: Gestión de productos
+  - name: Seeders
+    description: Seeders de datos de prueba (solo desarrollo, rol admin)
 
 security:
   - bearerAuth: []
@@ -562,6 +564,83 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
 
+  /api/seeders:
+    get:
+      summary: Listar seeders disponibles
+      description: |
+        Devuelve la lista de seeders configurados por módulo (key, module, description, defaultCount).
+        Requiere JWT y rol admin. Útil para la UI de datos de prueba.
+      operationId: listSeeders
+      tags:
+        - Seeders
+      responses:
+        '200':
+          description: Lista de seeders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSeederList'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Sin permisos (requiere rol admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/seeders/run:
+    post:
+      summary: Ejecutar un seeder
+      description: |
+        Ejecuta el seeder indicado creando la cantidad de registros especificada.
+        Requiere JWT y rol admin. Solo permitido en entorno de desarrollo (APP_ENV distinto de production).
+        Si se omite count se usa el defaultCount del seeder.
+      operationId: runSeeder
+      tags:
+        - Seeders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunSeederRequest'
+      responses:
+        '200':
+          description: Seeder ejecutado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunSeederResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Sin permisos (rol admin) o entorno producción (seeders solo en desarrollo)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Seeder no encontrado (key inválido)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Error de validación (key o count inválidos)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -921,6 +1000,74 @@ components:
             type: integer
           description: IDs de permisos (Spatie) a asignar al usuario
           example: [1, 2, 5]
+
+    SeederItem:
+      type: object
+      description: Definición de un seeder disponible en la UI
+      properties:
+        key:
+          type: string
+          description: Identificador único del seeder (ej. clients, products)
+          example: clients
+        module:
+          type: string
+          description: Etiqueta del módulo de negocio para agrupar en la UI
+          example: Clientes
+        description:
+          type: string
+          description: Objetivo o descripción del seeder
+          example: Genera clientes de prueba con nombre, email, teléfono, estado y tags.
+        defaultCount:
+          type: integer
+          description: Cantidad por defecto de registros a crear
+          example: 100
+
+    ApiResponseSeederList:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Seeders listados correctamente
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeederItem'
+
+    RunSeederRequest:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+          description: Identificador del seeder (debe existir en la lista de seeders)
+          example: clients
+        count:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          description: Cantidad de registros a crear. Si se omite se usa defaultCount del seeder.
+          example: 100
+
+    RunSeederResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Se crearon 100 registros correctamente.
+        data:
+          type: object
+          properties:
+            created:
+              type: integer
+              description: Número de registros creados
+              example: 100
 
     CreateUserRequest:
       type: object

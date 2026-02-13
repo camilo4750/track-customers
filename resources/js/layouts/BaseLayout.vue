@@ -10,7 +10,7 @@
     import GlobalModal from '../components/GlobalModal.vue';
     import { useTheme } from '../composables/useTheme';
     import { useAuth } from '../composables/useAuth';
-    import { faHome, faStore, faList, faLocationDot, faUsers, faPercent, faBox } from '@fortawesome/free-solid-svg-icons';
+    import { faHome, faStore, faList, faLocationDot, faUsers, faPercent, faBox, faDatabase } from '@fortawesome/free-solid-svg-icons';
 
     const isOpen = ref(true);
     const isMobileMenuOpen = ref(false);
@@ -68,7 +68,8 @@
             { label: 'Marketplace', icon: faStore, route: '' },
             { label: 'Órdenes', icon: faList, route: '' },
             { label: 'Seguimiento', icon: faLocationDot, route: '' },
-            { label: 'Descuentos', icon: faPercent, route: '' }
+            { label: 'Descuentos', icon: faPercent, route: '' },
+            { label: 'Datos de prueba', icon: faDatabase, route: 'seeders.index', roles: ['admin'] }
         ];
         const userRoles = currentUser.value?.roles || [];
         const userPermissions = currentUser.value?.permissions || [];
