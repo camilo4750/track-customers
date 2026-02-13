@@ -32,6 +32,7 @@
             "Internal\\Auth\\": "src/Internal/Auth/",
             "Internal\\Clients\\": "src/Internal/Clients/",
             "Internal\\Products\\": "src/Internal/Products/",
+            "Internal\\Seeders\\": "src/Internal/Seeders/",
             "Internal\\Shared\\": "src/Internal/Shared/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"

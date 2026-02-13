@@ -29,6 +29,7 @@ Sistema de gestión de clientes desarrollado con Laravel y Vue.js, implementando
 - 📄 **Tablas Avanzadas** - Componente de tabla con filtros, exportación y búsqueda
 - 🔔 **Sistema de Modales** - Sistema global de modales reutilizables
 - 📚 **Documentación API** - Documentación Swagger/OpenAPI integrada
+- 🌱 **Datos de prueba (Seeders)** - Módulo para ejecutar seeders por módulo desde la UI (clientes, productos, etc.) con cantidad configurable; solo admin y solo en entorno de desarrollo
 - 🏗️ **Arquitectura Hexagonal** - Separación clara de responsabilidades siguiendo principios SOLID
 
 ## 🛠️ Stack Tecnológico
@@ -88,6 +89,17 @@ track-clients/
 │   │   ├── Application/          # Handlers y casos de uso
 │   │   ├── Infrastructure/       # Controllers, Repositories
 │   │   └── Test/                 # Tests del módulo
+│   ├── Clients/                  # Módulo de clientes
+│   │   ├── Application/
+│   │   ├── Infrastructure/       # Controllers, Repositories, Seeders/
+│   │   └── Test/
+│   ├── Products/                 # Módulo de productos
+│   │   ├── Application/
+│   │   ├── Infrastructure/       # Controllers, Repositories, Seeders/
+│   │   └── Test/
+│   ├── Seeders/                  # Módulo gestión de seeders (UI + API list/run)
+│   │   ├── Application/          # ListSeedersHandler, RunSeederHandler, Contracts
+│   │   └── Infrastructure/       # SeederController, Routes, Provider
 │   └── Shared/                   # Código compartido
 │       ├── Entity/               # Entidades base
 │       ├── Exceptions/           # Excepciones personalizadas
@@ -110,6 +122,7 @@ track-clients/
 │   │   │   ├── auth/
 │   │   │   ├── dashboard/
 │   │   │   ├── home/
+│   │   │   ├── seeders/          # Datos de prueba (ejecutar seeders por módulo)
 │   │   │   └── users/
 │   │   └── utils/                # Utilidades
 │   │       ├── authGuard.js
@@ -121,8 +134,9 @@ track-clients/
 │   └── api.php                   # Rutas API
 ├── database/
 │   ├── migrations/               # Migraciones de base de datos
-│   └── seeders/                  # Seeders
+│   └── seeders/                  # DatabaseSeeder (seeders por módulo en src/Internal/.../Seeders/)
 ├── config/                       # Configuración Laravel
+│   └── seeders.php               # Registro de seeders disponibles para la UI
 ├── docs/                         # Documentación del proyecto
 └── tests/                        # Tests automatizados
 ```
