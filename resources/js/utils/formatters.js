@@ -15,3 +15,18 @@ export const formatDate = (dateString) => {
     });
 };
 
+/**
+ * Formatea un número como precio en moneda (locale es-CL)
+ * @param {number|null|undefined} value - Valor numérico
+ * @returns {string} Precio formateado o '-' si no hay valor
+ */
+export const formatPrice = (value) => {
+    if (value == null || value === '' || Number.isNaN(Number(value))) return '-';
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }).format(Number(value));
+};
+

@@ -2,7 +2,7 @@
     import { ref, computed, onMounted, onUnmounted } from 'vue';
     import { router } from '@inertiajs/vue3';
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-    import { faBars, faXmark, faMap } from '@fortawesome/free-solid-svg-icons';
+    import { faBars, faXmark, faMap, faBuilding } from '@fortawesome/free-solid-svg-icons';
     import SidebarHeader from './components/SidebarHeader.vue';
     import SidebarMenu from './components/SidebarMenu.vue';
     import SidebarFooter from './components/SidebarFooter.vue';
@@ -10,7 +10,7 @@
     import GlobalModal from '../components/GlobalModal.vue';
     import { useTheme } from '../composables/useTheme';
     import { useAuth } from '../composables/useAuth';
-    import { faHome, faStore, faList, faLocationDot, faUsers, faPercent } from '@fortawesome/free-solid-svg-icons';
+    import { faHome, faStore, faList, faLocationDot, faUsers, faPercent, faBox } from '@fortawesome/free-solid-svg-icons';
 
     const isOpen = ref(true);
     const isMobileMenuOpen = ref(false);
@@ -63,10 +63,11 @@
         const allItems = [
             { label: 'Dashboard', icon: faHome, route: 'dashboard' },
             { label: 'Usuarios', icon: faUsers, route: 'users.index', roles: ['admin'], permissions: ['User.show'] },
+            { label: 'Clientes', icon: faBuilding, route: 'clients.index' },
+            { label: 'Productos', icon: faBox, route: 'products.index' },
             { label: 'Marketplace', icon: faStore, route: '' },
             { label: 'Órdenes', icon: faList, route: '' },
             { label: 'Seguimiento', icon: faLocationDot, route: '' },
-            { label: 'Clientes', icon: faUsers, route: 'clients.index' },
             { label: 'Descuentos', icon: faPercent, route: '' }
         ];
         const userRoles = currentUser.value?.roles || [];
